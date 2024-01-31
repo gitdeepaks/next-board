@@ -8,18 +8,18 @@ export const NewButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Hint
-          label="Create Organization"
-          side="right"
-          align="start"
-          sideOffset={18}
-        >
-          <div className="aspect-square">
-            <button className="bg-white/25 w-full h-full rounded-md flex items-center justify-center opacity-60 hover:opacity-100 transition">
+        <div className="aspect-square">
+          <Hint
+            label="Create Organization"
+            side="right"
+            align="start"
+            sideOffset={18}
+          >
+            <button className="bg-white/25 w-10 h-10 rounded-md flex items-center justify-center opacity-60 hover:opacity-100 transition">
               <Plus className="text-white" />
             </button>
-          </div>
-        </Hint>
+          </Hint>
+        </div>
       </DialogTrigger>
       <DialogContent className="p-0 bg-transparent border-none max-w-[480px]">
         <CreateOrganization />
