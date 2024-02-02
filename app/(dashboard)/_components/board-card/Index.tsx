@@ -6,7 +6,7 @@ import { OverLay } from "./OverLay";
 import { useAuth } from "@clerk/nextjs";
 import { Footer } from "./Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Actions } from "@/components/actions";
+import { Actions } from "@/components/Actions";
 
 import { MoreHorizontal } from "lucide-react";
 
