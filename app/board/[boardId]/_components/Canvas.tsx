@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useCallback, useState } from "react";
 import { Info } from "./Info";
 import { Participants } from "./Participants";
@@ -30,9 +30,9 @@ export const Canvas = ({ boardId }: CanvasProps) => {
   const canRedo = useCanRedo();
 
   const onWheel = useCallback((e: React.WheelEvent) => {
-    setCamera((prev) => ({
-      x: prev.x + e.deltaX,
-      y: prev.y + e.deltaY,
+    setCamera((cam) => ({
+      x: cam.x - e.deltaX,
+      y: cam.y - e.deltaY,
     }));
   }, []);
 
@@ -46,6 +46,10 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     },
     []
   );
+
+  const onPointerLeave = useMutation(({ setMyPresence }) => {
+    setMyPresence({ cursor: null });
+  }, []);
 
   return (
     <main className="h-ful w-full relative bg-neutral-100 touch-none">
@@ -64,8 +68,13 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         className="h-[100dvh] w-[100dvw]"
         onWheel={onWheel}
         onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
       >
-        <g>
+        <g
+          style={{
+            transform: `translate(${camera.x}px, ${camera.y}px)`,
+          }}
+        >
           <CursorsPresence />
         </g>
       </svg>
