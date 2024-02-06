@@ -19,9 +19,15 @@ import {
   Color,
   LayerType,
   Point,
+  Side,
+  XYWH,
 } from "@/types/canvas";
 import { CursorsPresence } from "./CursorsPresence";
-import { connectionIdToColor, pointerEventToCanvasPoint } from "@/lib/utils";
+import {
+  connectionIdToColor,
+  pointerEventToCanvasPoint,
+  resizeBound,
+} from "@/lib/utils";
 import { nanoid } from "nanoid";
 import { LiveObject } from "@liveblocks/client";
 import { set } from "date-fns";
@@ -86,6 +92,38 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     [lastUsedColor]
   );
 
+  const resizeSelectedLayer = useMutation(
+    ({ storage, self }, point: Point) => {
+      if (canvasState.mode !== CanvasMode.Resizing) return;
+
+      const bounds = resizeBound(
+        canvasState.initialBounds,
+        canvasState.corner,
+        point
+      );
+
+      const liveLayres = storage.get("layers");
+      const layer = liveLayres.get(self.presence.selection[0]);
+
+      if (layer) {
+        layer.update(bounds);
+      }
+    },
+    [canvasState]
+  );
+
+  const onResizeHandlePointerDown = useCallback(
+    (corner: Side, initialBounds: XYWH) => {
+      history.pause();
+      setCanvasState({
+        mode: CanvasMode.Resizing,
+        initialBounds,
+        corner,
+      });
+    },
+    [history]
+  );
+
   const onWheel = useCallback((e: React.WheelEvent) => {
     setCamera((cam) => ({
       x: cam.x - e.deltaX,
@@ -99,9 +137,13 @@ export const Canvas = ({ boardId }: CanvasProps) => {
 
       const current = pointerEventToCanvasPoint(e, camera);
 
+      if (canvasState.mode === CanvasMode.Resizing) {
+        resizeSelectedLayer(current);
+      }
+
       setMyPresence({ cursor: current });
     },
-    []
+    [canvasState, camera, resizeSelectedLayer]
   );
 
   const onPointerLeave = useMutation(({ setMyPresence }) => {
@@ -198,7 +240,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
               selectionColor={layerIdsToColoeSelection[layerId]}
             />
           ))}
-          <SelectionBox onResizeHandlePointerDown={() => {}} />
+          <SelectionBox onResizeHandlePointerDown={onResizeHandlePointerDown} />
           <CursorsPresence />
         </g>
       </svg>
