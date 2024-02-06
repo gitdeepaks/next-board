@@ -44,22 +44,22 @@ export function resizeBound(bounds: XYWH, corner: Side, point: Point): XYWH {
     height: bounds.height,
   };
 
-  if ((corner && Side.Left) === Side.Left) {
+  if ((corner & Side.Left) === Side.Left) {
     res.x = Math.min(point.x, bounds.x + bounds.width);
     res.width = Math.abs(bounds.x + bounds.width - point.x);
   }
 
-  if ((corner && Side.Right) === Side.Right) {
+  if ((corner & Side.Right) === Side.Right) {
     res.x = Math.min(point.x, bounds.x);
     res.width = Math.abs(point.x - bounds.x);
   }
 
-  if ((corner && Side.Top) === Side.Top) {
+  if ((corner & Side.Top) === Side.Top) {
     res.y = Math.min(point.y, bounds.y + bounds.height);
     res.height = Math.abs(bounds.y + bounds.height - point.y);
   }
 
-  if ((corner && Side.Bottom) === Side.Bottom) {
+  if ((corner & Side.Bottom) === Side.Bottom) {
     res.y = Math.min(point.y, bounds.y);
     res.height = Math.abs(point.y - bounds.y);
   }
