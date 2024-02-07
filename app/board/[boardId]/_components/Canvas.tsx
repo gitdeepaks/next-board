@@ -30,9 +30,9 @@ import {
 } from "@/lib/utils";
 import { nanoid } from "nanoid";
 import { LiveObject } from "@liveblocks/client";
-import { set } from "date-fns";
 import { LayerPreview } from "./LayerPreview";
 import { SelectionBox } from "./SelectionBox";
+import { SelectionTools } from "./SelectionTools";
 
 const MAX_LAYERS = 100;
 
@@ -263,6 +263,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     <main className="h-ful w-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
       <Participants />
+
       <ToolBar
         convasState={canvasState}
         setConvasState={setCanvasState}
@@ -271,6 +272,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         redo={history.redo}
         undo={history.undo}
       />
+
+      <SelectionTools camera={camera} setLastUsedColor={setLastUsedColor} />
 
       <svg
         className="h-[100dvh] w-[100dvw]"
