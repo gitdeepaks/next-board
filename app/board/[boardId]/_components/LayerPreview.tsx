@@ -4,6 +4,8 @@ import { LayerType } from "@/types/canvas";
 import React from "react";
 import { memo } from "react";
 import { Rectangle } from "./Rectangle";
+import { Ellipse } from "./Ellipse";
+import { Text } from "./Text";
 
 interface LayerPreviewProps {
   id: string;
@@ -19,6 +21,24 @@ export const LayerPreview = memo(
       return null;
     }
     switch (layer.type) {
+      case LayerType.Text:
+        return (
+          <Text
+            id={id}
+            layer={layer}
+            onPointerDown={onLayerPointDown}
+            selectionColor={selectionColor}
+          />
+        );
+      case LayerType.Ellipse:
+        return (
+          <Ellipse
+            id={id}
+            layer={layer}
+            onPointerDown={onLayerPointDown}
+            selectionColor={selectionColor}
+          />
+        );
       case LayerType.Rectangle:
         return (
           <Rectangle
