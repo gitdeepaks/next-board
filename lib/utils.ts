@@ -1,4 +1,4 @@
-import { Camera, Color, Point, Side, XYWH } from "@/types/canvas";
+import { Camera, Color, Layer, Point, Side, XYWH } from "@/types/canvas";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -65,4 +65,41 @@ export function resizeBound(bounds: XYWH, corner: Side, point: Point): XYWH {
   }
 
   return res;
+}
+
+export function findIntersectingLayersWithRect(
+  latersIds: readonly string[],
+  layers: ReadonlyMap<string, Layer>,
+  a: Point,
+  b: Point
+) {
+  const rectangle = {
+    x: Math.min(a.x, b.x),
+    y: Math.min(a.y, b.y),
+    width: Math.abs(a.x - b.x),
+    height: Math.abs(a.y - b.y),
+  };
+
+  const ids = [];
+
+  for (const laterId of latersIds) {
+    const layer = layers.get(laterId);
+
+    if (layer == null) {
+      continue;
+    }
+
+    const { x, y, height, width } = layer;
+
+    if (
+      rectangle.x + rectangle.width > x &&
+      rectangle.x < x + width &&
+      rectangle.y + rectangle.height > y &&
+      rectangle.y < y + height
+    ) {
+      ids.push(laterId);
+    }
+  }
+
+  return ids;
 }
