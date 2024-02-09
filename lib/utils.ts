@@ -103,3 +103,9 @@ export function findIntersectingLayersWithRect(
 
   return ids;
 }
+
+export function getContranstingTextColor(color: Color) {
+  const brightness = (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
+
+  return brightness > 182 ? "black" : "white";
+}
