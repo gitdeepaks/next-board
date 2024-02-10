@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
+import { useProModal } from "@/hooks/strore/use-pro-modal";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
@@ -17,6 +18,7 @@ interface NewBoardButtonProps {
 export const NewBoardButton = ({ orgId, disabled }: NewBoardButtonProps) => {
   const { mutate, pending } = useApiMutation(api.board.create);
   const router = useRouter();
+  const { onOpen } = useProModal();
 
   const handleCreateBoard = async () => {
     mutate({
@@ -29,6 +31,7 @@ export const NewBoardButton = ({ orgId, disabled }: NewBoardButtonProps) => {
       })
       .catch((err) => {
         toast.error("Failed to create board");
+        onOpen();
       });
   };
 
