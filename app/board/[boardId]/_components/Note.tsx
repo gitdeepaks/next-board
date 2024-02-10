@@ -39,7 +39,7 @@ interface NoteLayer {
 
 interface NoteProps {
   id: string;
-  layer: TextLayer | NoteLayer; // Updated to accept both TextLayer and NoteLayer
+  layer: TextLayer | NoteLayer;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
   selectionColor?: string;
 }
