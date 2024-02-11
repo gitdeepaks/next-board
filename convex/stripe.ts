@@ -2,7 +2,7 @@
 import Stripe from "stripe";
 import { v } from "convex/values";
 
-import { action } from "./_generated/server";
+import { action, internalAction } from "./_generated/server";
 
 const url = process.env.NEXT_PUBLIC_URL;
 const stripe = new Stripe(process.env.STRIPE_API_KEY!, {
@@ -48,5 +48,33 @@ export const pay = action({
       mode: "subscription",
     });
     return session.url!;
+  },
+});
+
+export const fulfill = internalAction({
+  args: {
+    signature: v.string(),
+    payload: v.string(),
+  },
+  handler: async (ctx, { signature, payload }) => {
+    const webHookSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
+
+    try {
+      const event = stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        webHookSecret
+      );
+
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      if (event.type === "checkout.session.completed") {
+        console.log("Checkout session completed", session);
+      }
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      return { success: false };
+    }
   },
 });
