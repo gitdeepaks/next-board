@@ -30,12 +30,24 @@ export const create = mutation({
 
     const randomImage = images[Math.floor(Math.random() * images.length)];
 
+    const orgSubscriptions = await ctx.db
+      .query("orgSubscriptions")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .unique();
+
+    const preriodEnd = orgSubscriptions?.stripeCurrentPeriodEnd;
+
+    const isSubscriptionActive = preriodEnd && preriodEnd > Date.now();
+
     const existingBoardsCounts = await ctx.db
       .query("boards")
       .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
       .collect();
 
-    if (existingBoardsCounts.length >= ORG_BOARD_LIMIT) {
+    if (
+      !isSubscriptionActive &&
+      existingBoardsCounts.length >= ORG_BOARD_LIMIT
+    ) {
       throw new Error("Board limit reached");
     }
 

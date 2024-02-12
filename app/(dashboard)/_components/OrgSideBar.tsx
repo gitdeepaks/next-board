@@ -4,10 +4,15 @@ import Image from "next/image";
 
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { OrganizationSwitcher } from "@clerk/nextjs";
+import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Star } from "lucide-react";
+import { Banknote, LayoutDashboard, Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useAction, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useState } from "react";
+import { set } from "date-fns";
+import { toast } from "sonner";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -17,14 +22,49 @@ const font = Poppins({
 export const OrgSideBar = () => {
   const searchParams = useSearchParams();
   const favorites = searchParams.get("favorites");
+
+  const { organization } = useOrganization();
+  const isSubscriptionActive = useQuery(
+    api.subscritions.getIsSunscriptionActive,
+    {
+      ordId: organization?.id,
+    }
+  );
+
+  const portal = useAction(api.stripe.portal);
+  const pay = useAction(api.stripe.pay);
+  const [pending, setPending] = useState(false);
+
+  const onCLick = async () => {
+    if (!organization?.id) return;
+
+    setPending(true);
+    try {
+      const action = isSubscriptionActive ? portal : pay;
+      const redirectUrl = await action({ orgId: organization.id });
+
+      window.location.href = redirectUrl;
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
     <div className="hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5">
       <Link href="/">
         <div className="flex items-center gap-x-2">
           <Image src="/logo.svg" width={60} height={60} alt="logo" />
-          <span className={cn("font-sm text-xl", font.className)}>
-            Big Board
-          </span>
+          {isSubscriptionActive ? (
+            <span className={cn("font-sm text-xl", font.className)}>
+              BigBoard Pro
+            </span>
+          ) : (
+            <span className={cn("font-sm text-xl", font.className)}>
+              Big Board
+            </span>
+          )}
         </div>
       </Link>
       <OrganizationSwitcher
@@ -75,6 +115,16 @@ export const OrgSideBar = () => {
             <Star className="h-4 w-4 mr-2" />
             Favourate Board
           </Link>
+        </Button>
+        <Button
+          onClick={onCLick}
+          disabled={pending}
+          variant="ghost"
+          size="lg"
+          className="font-normal justify-start px-2 w-full"
+        >
+          <Banknote className="h-4 w-4 mr-2" />
+          {isSubscriptionActive ? "Payment Settings" : "Upgrade"}
         </Button>
       </div>
     </div>
