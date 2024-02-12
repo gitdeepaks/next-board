@@ -11,7 +11,7 @@ interface DashBoardPageProps {
   };
 }
 
-function DashBoardPage({ searchParams }: DashBoardPageProps) {
+const DashBoardPage = ({ searchParams }: DashBoardPageProps) => {
   const { organization } = useOrganization();
 
   return (
@@ -23,6 +23,6 @@ function DashBoardPage({ searchParams }: DashBoardPageProps) {
       )}
     </div>
   );
-}
+};
 
 export default DashBoardPage;
