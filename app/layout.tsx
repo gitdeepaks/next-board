@@ -22,12 +22,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Suspense fallback={<Loading />} />
-        <ConverClientProvider>
-          <Toaster />
-          <ModalProvider />
-          {children}
-        </ConverClientProvider>
+        <Suspense fallback={<Loading />}>
+          <ConverClientProvider>
+            <Toaster />
+            <ModalProvider />
+            {children}
+          </ConverClientProvider>
+        </Suspense>
       </body>
     </html>
   );
